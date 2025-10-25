@@ -26,7 +26,7 @@ void setup() {
   println(month);
   updateBG();
   groundLevel = 3*(height / 4);
-  numberOfClouds = int(random(10, 30));
+  numberOfClouds = int(random(10, 20));
   clouds = new Cloud[numberOfClouds];
   for (int i = 0; i < numberOfClouds; i++) {
     clouds[i] = new Cloud();
@@ -59,8 +59,8 @@ void keyPressed() {
     updateBG();
     break;
   case 'r':
-    noiseSeed((long)random(400));
-    randomSeed((long)random(400));
+    noiseSeed((long)random(400)*(long)random(400));
+    randomSeed((long)random(400)*(long)random(400));
     break;
   }
 }
@@ -68,7 +68,7 @@ void keyPressed() {
 void drawTree() {
   int rootx = width/2;
   int rooty = groundLevel;
-  Tree tree1 = new Tree(rootx,rooty);
+  Tree tree1 = new Tree(rootx, rooty);
   tree1.draw();
 }
 
@@ -87,6 +87,8 @@ class Tree {
     scale = s;
     rootThickness = int(map(noise(rootx), 0, 1, 10, 40)*scale);
   }
+  float growth = map(noise(rootx), 0, 1, rootThickness*10, rootThickness*15);
+  float curvature = map(noise(rootx*7), 0, 1, 1, 10);
 
   void draw() {
     fill(color(40, 100, 20));
@@ -95,6 +97,34 @@ class Tree {
       triangle(rootx-rootThickness, groundLevel, rootx+rootThickness, groundLevel, map(noise(rootx+20*i), 0, 1, rootx-100, rootx+100), map(noise(rooty+20*i), 0, 1, rooty, rooty+60));
     }
     // TODO: Add a recursive trunk function so that the trunk gets thinner toward the top. Perhaps use a trig function.
+    beginShape();
+    vertex(rootx+rootThickness, rooty);
+    for (int growthStage=0; growthStage<growth; growthStage=growthStage+2) {
+      float vx = (noise(rootx+42)-0.5)*map(growthStage, 0, growth, 0, 200)+rootx+rootThickness*map(growthStage, 0, growth, 1, 0)+sin(map(growthStage, 0, growth, 0, TWO_PI)*noise(rooty)*4)*curvature;
+      float vy = rooty-growthStage;
+      vertex(vx, vy);
+      if (growthStage>(growth/2) && noise(growthStage)>0.9) {
+        spawnBranch(vx, vy, growthStage);
+      }
+    }
+    for (int growthStage=int(growth); growthStage>0; growthStage=growthStage-2) {
+      vertex((noise(rootx+42)-0.5)*map(growthStage, 0, growth, 0, 200)+rootx-rootThickness*map(growthStage, 0, growth, 1, 0)+sin(map(growthStage, 0, growth, 0, TWO_PI)*noise(rooty)*4)*curvature, rooty-growthStage);
+    }
+    vertex(rootx-rootThickness, rooty);
+    endShape();
+  }
+  void spawnBranch(float ix, float iy, float stage) {
+    float y=iy;
+    beginShape();
+    vertex(ix, iy);
+    for (float x=ix; x<rootThickness*4*map(stage, 0, growth, 1, 0); x++) {
+      vertex();
+      if (noise(x)>0.9 && stage>0) {
+        spawnBranch(x, y, stage-5);
+      }
+    };
+    vertex(ix, iy+10);
+    endShape();
   }
 }
 
@@ -144,7 +174,8 @@ class Cloud {
       for (int fluff =0; fluff<20; fluff++) {
       }
     }
-    x = x + map(y, 0, height - (height - groundLevel), 1, 0);
+    // Clouds move with the wind.
+    x = x + map(y, 0, height - (height - groundLevel), 0.7, 0);
     if (x > (width+150)) x= -150;
   }
 }
