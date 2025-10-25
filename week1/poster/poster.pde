@@ -87,11 +87,16 @@ class Tree {
     scale = s;
     rootThickness = int(map(noise(rootx), 0, 1, 10, 40)*scale);
   }
-  float growth = map(noise(rootx), 0, 1, rootThickness*10, rootThickness*15);
-  float curvature = map(noise(rootx*7), 0, 1, 1, 10);
+  color brown = color(40, 100, 20);
+  color green = color(80, 100, 50);
+  color yellow = color(40, 100, 100);
+
+
 
   void draw() {
-    fill(color(40, 100, 20));
+    float growth = map(noise(rootx), 0, 1, rootThickness*10, rootThickness*15);
+    float curvature = map(noise(rootx*7), 0, 1, 1, 10);
+    fill(brown);
     // This loop draws the roots:
     for (int i=0; i<10; i++) {
       triangle(rootx-rootThickness, groundLevel, rootx+rootThickness, groundLevel, map(noise(rootx+20*i), 0, 1, rootx-100, rootx+100), map(noise(rooty+20*i), 0, 1, rooty, rooty+60));
@@ -103,28 +108,44 @@ class Tree {
       float vx = (noise(rootx+42)-0.5)*map(growthStage, 0, growth, 0, 200)+rootx+rootThickness*map(growthStage, 0, growth, 1, 0)+sin(map(growthStage, 0, growth, 0, TWO_PI)*noise(rooty)*4)*curvature;
       float vy = rooty-growthStage;
       vertex(vx, vy);
-      if (growthStage>(growth/2) && noise(growthStage)>0.9) {
-        spawnBranch(vx, vy, growthStage);
-      }
+      //if (growthStage>(growth/2) && noise(growthStage)>0.6) {
+      //  //spawnBranch(vx+5, vy, growthStage);
+      //  //triangle(vx+5, vy, vx+50, vy, vx, vy+5);
+      //  float vvx=vx+noise(vx)*map(growthStage, 0, growth, 300, 100);
+      //  vertex(vvx, vy);
+      //  //beginShape();
+      //  //fill(green);
+      //  //vertex(vvx+10, vy+10);
+      //  //vertex(vvx+20, vy);
+      //  //vertex(vvx+10, vy-10);
+      //  //vertex(vvx, vy);
+      //  //endShape();
+      //  //fill(brown);
+      //  vertex(vx, vy+7);
+      //  growthStage=growthStage+6;
+      //}
     }
     for (int growthStage=int(growth); growthStage>0; growthStage=growthStage-2) {
-      vertex((noise(rootx+42)-0.5)*map(growthStage, 0, growth, 0, 200)+rootx-rootThickness*map(growthStage, 0, growth, 1, 0)+sin(map(growthStage, 0, growth, 0, TWO_PI)*noise(rooty)*4)*curvature, rooty-growthStage);
+      float vx = (noise(rootx+42)-0.5)*map(growthStage, 0, growth, 0, 200)+rootx-rootThickness*map(growthStage, 0, growth, 1, 0)+sin(map(growthStage, 0, growth, 0, TWO_PI)*noise(rooty)*4)*curvature;
+      float vy = rooty-growthStage;
+      vertex(vx, vy);
+      //if (growthStage>(growth/2) && noise(growthStage*2)>0.7) {
+      //  //spawnBranch(vx+5, vy, growthStage);
+      //  //triangle(vx+5, vy, vx+50, vy, vx, vy+5);
+      //  vertex(vx+noise(vx)*map(growthStage, 0, growth, -300, -100), vy);
+      //  vertex(vx, vy-5);
+      //}
     }
     vertex(rootx-rootThickness, rooty);
     endShape();
-  }
-  void spawnBranch(float ix, float iy, float stage) {
-    float y=iy;
-    beginShape();
-    vertex(ix, iy);
-    for (float x=ix; x<rootThickness*4*map(stage, 0, growth, 1, 0); x++) {
-      vertex();
-      if (noise(x)>0.9 && stage>0) {
-        spawnBranch(x, y, stage-5);
-      }
-    };
-    vertex(ix, iy+10);
-    endShape();
+    fill(green);
+    if (season != "winter") {
+      ellipse(rootx, height-growth-200, 180, 100);
+      ellipse(rootx+(noise(rootx*13)-0.5)*200, height-growth-250, 100, 50);
+      ellipse(rootx+(noise(rootx*12)-0.5)*200, height-growth-150, 80, 50);
+      ellipse(rootx+(noise(rootx*11)-0.5)*250, height-growth-180, 80, 50);
+      ellipse(rootx+(noise(rootx*11)-0.5)*250, height-growth-190, 80, 50);
+    }
   }
 }
 
