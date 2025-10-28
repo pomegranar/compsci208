@@ -9,7 +9,7 @@ Cloud[] clouds;
 
 
 void setup() {
-  size(1600, 900);
+  size(400, 900);
   colorMode(HSB, 360, 100, 100, 255);
   fill(102);
   noStroke();
