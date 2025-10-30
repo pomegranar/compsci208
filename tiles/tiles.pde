@@ -2,12 +2,15 @@
 int cols, rows;
 float tileSize = 40;
 Tile[][] grid;
-PVector pos, prev;
+PVector[] pos = new PVector[3];
+PVector[] prev = new PVector[3];
+color[] colsRGB = { color(255, 0, 0, 20), color(0, 255, 0, 20), color(0, 0, 255, 20) };
 float step = 2;
 float t = 0;
 
 void setup() {
   size(800, 800);
+  blendMode(ADD);
   cols = int(width / tileSize);
   rows = int(height / tileSize);
   grid = new Tile[cols][rows];
@@ -20,43 +23,59 @@ void setup() {
     }
   }
 
-  pos = new PVector(width / 2, height / 2);
-  prev = pos.copy();
+  for (int i = 0; i < 3; i++) {
+    pos[i] = new PVector(random(width), random(height));
+    prev[i] = pos[i].copy();
+  }
 
-  stroke(255);
-  strokeWeight(2.5);
   background(0);
+  strokeWeight(2.5);
 }
 
 void draw() {
-  fill(0, 20);
+  fill(0, 10);
   noStroke();
   rect(0, 0, width, height);
-  stroke(255);
   noFill();
 
-  t += 0.01; // animate noise / transformations
+  t += 0.01;
 
-  for (int k = 0; k < 300; k++) {
-    int cx = constrain(int(pos.x / tileSize), 0, cols - 1);
-    int cy = constrain(int(pos.y / tileSize), 0, rows - 1);
-    Tile tile = grid[cx][cy];
+  for (int i = 0; i < 3; i++) {
+    stroke(colsRGB[i]);
 
-    PVector dir = tile.transform(pos.copy().mult(0.01), t);
+    for (int k = 0; k < 200; k++) {
+      int cx = constrain(int(pos[i].x / tileSize), 0, cols - 1);
+      int cy = constrain(int(pos[i].y / tileSize), 0, rows - 1);
+      Tile tile = grid[cx][cy];
 
-    // ensure motion never dies out
-    if (dir.mag() < 0.01) dir = PVector.random2D();
-    dir.normalize();
-    prev.set(pos);
-    pos.add(dir.mult(step));
+      PVector dir = tile.transform(pos[i].copy().mult(0.01), t + i * 10);
+      if (dir.mag() < 0.01) dir = PVector.random2D();
+      dir.normalize();
+      prev[i].set(pos[i]);
+      pos[i].add(dir.mult(step));
 
-    line(prev.x, prev.y, pos.x, pos.y);
+      line(prev[i].x, prev[i].y, pos[i].x, pos[i].y);
 
-    // wrap around screen
-    if (pos.x < 0) pos.x += width;
-    if (pos.x > width) pos.x -= width;
-    if (pos.y < 0) pos.y += height;
-    if (pos.y > height) pos.y -= height;
+      if (pos[i].x < 0) pos[i].x += width;
+      if (pos[i].x > width) pos[i].x -= width;
+      if (pos[i].y < 0) pos[i].y += height;
+      if (pos[i].y > height) pos[i].y -= height;
+    }
+  }
+  stroke(0);
+  strokeWeight(1);
+  for (int x = 0; x < cols; x++) {
+    line(x * tileSize, 0, x * tileSize, height);
+  }
+  for (int y = 0; y < rows; y++) {
+    line(0, y * tileSize, width, y * tileSize);
+  }stroke(0);
+  strokeWeight(1);
+  for (int x = 0; x < cols; x++) {
+    line(x * tileSize, 0, x * tileSize, height);
+  }
+  for (int y = 0; y < rows; y++) {
+    line(0, y * tileSize, width, y * tileSize);
   }
 }
 
