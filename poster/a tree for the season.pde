@@ -6,14 +6,19 @@ color sky;
 int groundLevel;
 int numberOfClouds;
 Cloud[] clouds;
+Snowflake[] snow;
+int numberOfSnow;
+PFont font;
 
 
 void setup() {
-  size(400, 900);
+  font = createFont("Georgia", 128);
+  textFont(font);
+  size(600, 900);
   colorMode(HSB, 360, 100, 100, 255);
   fill(102);
   noStroke();
-  month = 3; // FOR DEBUG PURPOSES. WILL REMOVE BEFORE SUBMIT.
+  //month = 3; // FOR DEBUG PURPOSES. WILL REMOVE BEFORE SUBMIT.
   if (month >= 3 && month <= 5) {
     season = "spring";
   } else if (month >= 6 && month <= 8) {
@@ -31,6 +36,11 @@ void setup() {
   for (int i = 0; i < numberOfClouds; i++) {
     clouds[i] = new Cloud();
   }
+  numberOfSnow = int(random(20, 500));
+  snow = new Snowflake[numberOfSnow];
+  for (int i = 0; i < numberOfSnow; i++) {
+    snow[i] = new Snowflake();
+  }
 }
 
 void draw() {
@@ -38,6 +48,9 @@ void draw() {
   drawSun();
   drawGrass();
   drawTree();
+  if (season=="winter" || season=="spring") {
+    drawSnow(snow);
+  }
 }
 
 void keyPressed() {
@@ -63,6 +76,12 @@ void keyPressed() {
     randomSeed((long)random(400)*(long)random(400));
     break;
   }
+  if (key == ' ') {
+    String timestamp = nf(year(), 4) + nf(month(), 2) + nf(day(), 2) + "_" +
+      nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
+    saveFrame("screenshot_" + timestamp + ".png");
+    println("Screenshot saved!");
+  }
 }
 
 void drawTree() {
@@ -71,6 +90,14 @@ void drawTree() {
   Tree tree1 = new Tree(rootx, rooty);
   tree1.draw();
 }
+
+//void drawGrass() {
+//  for (int patch=0; patch<10; patch++) {
+//    for (int blade=0; blade<10; blade++) {
+//      print("");
+//    }
+//  }
+//};
 
 class Tree {
   int rootx, rooty, scale = 1, rootThickness;
@@ -89,13 +116,13 @@ class Tree {
   }
   color brown = color(40, 100, 20);
   color green = color(80, 100, 50);
-  color yellow = color(40, 100, 100);
+  color yellow = color(30, 100, 80);
 
 
 
   void draw() {
     float growth = map(noise(rootx), 0, 1, rootThickness*10, rootThickness*15);
-    float curvature = map(noise(rootx*7), 0, 1, 1, 10);
+    float curvature = map(noise(rootx*7), 0, 1, 1, 20);
     fill(brown);
     // This loop draws the roots:
     for (int i=0; i<10; i++) {
@@ -138,7 +165,11 @@ class Tree {
     }
     vertex(rootx-rootThickness, rooty);
     endShape();
-    fill(green);
+    if (season != "fall") {
+      fill(green);
+    } else {
+      fill(yellow);
+    }
     if (season != "winter") {
       ellipse(rootx, height-growth-200, 180, 100);
       ellipse(rootx+(noise(rootx*13)-0.5)*200, height-growth-250, 100, 50);
@@ -161,6 +192,8 @@ void drawSun() {
 void drawGrass() {
   fill(grass);
   rect(0, groundLevel, width, height);
+  fill(0, 20);
+  text("Fall", groundLevel, 200);
 }
 
 void drawClouds(Cloud[] clouds) {
@@ -201,6 +234,51 @@ class Cloud {
   }
 }
 
+class Snowflake {
+  int x, y;
+  Snowflake () {
+    this.x = int(random(0, width));
+    this.y = int(random(0, height));
+  }
+  void draw() {
+    if (season=="winter") {
+      fill(0, 0, 100);
+      circle(x, y, 3);
+      if (x>width) {
+        x=0;
+      } else {
+        x=x+(int)(6*sin(noise(x, y)));
+      }
+      if (y>height) {
+        y=0;
+      } else {
+        y=y+2;
+      }
+    } else {
+      stroke(220, 30, 100, 230);
+      strokeWeight(3);
+      line(x, y, x+(int)(2*sin(noise(x, y))), y+8);
+      noStroke();
+      if (x>width) {
+        x=0;
+      } else {
+        x=x+1+(int)(2*sin(noise(x, y)));
+      }
+      if (y>height) {
+        y=0;
+      } else {
+        y=y+4;
+      }
+    }
+  }
+}
+
+void drawSnow(Snowflake[] snow) {
+  for (int snowId = 0; snowId < snow.length; snowId++) {
+    snow[snowId].draw();
+  }
+}
+
 void updateBG() {
   if (season == "winter") {
     sky = color(220, 20, 100, 255);
@@ -212,10 +290,12 @@ void updateBG() {
     sky = color(225, 60, 95, 255);
     grass = color(100, 70, 85);
   } else {
-    sky = color(220, 30, 100, 255);
-    grass = color(60, 60, 60);
+    sky = color(220, 25, 90, 255);
+    grass = color(40, 65, 70);
   }
 }
+
+
 
 void drawSky(color baseColor) {
   updateBG();
