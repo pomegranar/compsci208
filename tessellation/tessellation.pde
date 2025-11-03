@@ -31,13 +31,16 @@ void hexagon(float x,float y,float side){
   vertex(x-radius-radius*0.7071,y-radius*0.7071);
   vertex(x-radius-radius*0.5,y-radius*0.866); 
 
-  // vertex(x-radius-radius*0.9659,y-radius*0.2588);
-  // vertex(x-radius-radius*0.866,y-radius*0.5);
-  // vertex(x-radius-radius*0.7071,y-radius*0.7071);
-  // vertex(x-radius-radius*0.5,y-radius*0.866);
-  //
+  vertex(x-side+radius*0.7071,y-side*sin(radians(60))+radius*0.7071);
+  vertex(x-side+radius*0.866,y-side*sin(radians(60))+radius*0.5);
+  vertex(x-side+radius*0.9659,y-side*sin(radians(60))+radius*0.2588);
+
   vertex(x-radius,y-side*sin(radians(60)));
   vertex(x+radius,y-side*sin(radians(60)));
+
+  vertex(x+side-radius*0.9659,y-side*sin(radians(60))+radius*0.2588);
+  vertex(x+side-radius*0.866,y-side*sin(radians(60))+radius*0.5);
+  vertex(x+side-radius*0.7071,y-side*sin(radians(60))+radius*0.7071);
 
   vertex(x+radius+radius*0.5,y-radius*0.866);
   vertex(x+radius+radius*0.7071,y-radius*0.7071);
