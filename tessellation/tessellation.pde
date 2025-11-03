@@ -1,10 +1,11 @@
-float side; 
+float side, radius; 
 
 void setup(){
   size(720,720);
   background(0);
   noStroke();
-  side = 80.0;
+  side = 120.0;
+  radius = side/2;
   colorMode(HSB, 360, 100, 100);
   noiseSeed((long)random(543));
 }
@@ -25,11 +26,27 @@ void hexagon(float x,float y,float side){
   fill(map(noise(x+y),0,1,0,360),map(noise(x-y+frameCount*0.01),0,1,0,100),map(sin(noise(x+y+frameCount*0.01)),0,1,0,80),40);
   beginShape();
   vertex(x-side,y);
-  vertex(x-side/2,y-side*sin(radians(60)));
-  vertex(x+side/2,y-side*sin(radians(60)));
+  vertex(x-radius-radius*0.9659,y-radius*0.2588);
+  vertex(x-radius-radius*0.866,y-radius*0.5);
+  vertex(x-radius-radius*0.7071,y-radius*0.7071);
+  vertex(x-radius-radius*0.5,y-radius*0.866); 
+
+  // vertex(x-radius-radius*0.9659,y-radius*0.2588);
+  // vertex(x-radius-radius*0.866,y-radius*0.5);
+  // vertex(x-radius-radius*0.7071,y-radius*0.7071);
+  // vertex(x-radius-radius*0.5,y-radius*0.866);
+  //
+  vertex(x-radius,y-side*sin(radians(60)));
+  vertex(x+radius,y-side*sin(radians(60)));
+
+  vertex(x+radius+radius*0.5,y-radius*0.866);
+  vertex(x+radius+radius*0.7071,y-radius*0.7071);
+  vertex(x+radius+radius*0.866,y-radius*0.5);
+  vertex(x+radius+radius*0.9659,y-radius*0.2588);
+
   vertex(x+side,y);
-  vertex(x+side/2,y+side*sin(radians(60)));
-  vertex(x-side/2,y+side*sin(radians(60)));
+  vertex(x+radius,y+side*sin(radians(60)));
+  vertex(x-radius,y+side*sin(radians(60)));
   endShape();
 }
 
