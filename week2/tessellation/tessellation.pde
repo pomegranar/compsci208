@@ -10,17 +10,18 @@ void setup(){
   noiseSeed((long)random(543));
 }
 void draw(){
+  blendMode(MULTIPLY);
+  fill(0,55);
+  rect(0,0,width,height);
+  // ENABLE TO SEE THE TESSELLATION MORE CLEARLY
+  // outline();
+  blendMode(ADD); 
   for (float x=0;x<width+side;x=x+1*side){
     for (float y=0;y<height+side;y=y+1*side*0.866) {
       hexagon(x,y,side);
     }
   }
-  blendMode(MULTIPLY);
-  fill(0,50);
-  rect(0,0,width,height);
-  // ENABLE TO SEE THE TESSELLATION MORE CLEARLY
-  // outline();
-  blendMode(ADD);
+
 }
 
 
