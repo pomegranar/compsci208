@@ -1,8 +1,10 @@
-# Reflection on Week 2 Project
+# Week 2 Project Reflection
 
 <!-- 400-600 words -->
 
 | Anar Nyambayar
+
+Repo: https://github.com/pomegranar/compsci208
 
 This week, I created two works using contrasting rule-sets: 'Fields', which defines line-tracing entities of RGB traversing a grid of randomly generated vector fields that manipulate their trajectory in unexpected ways. And 'Tessellation', which features a tessellation of hexagons with squiggly topsides that overlap and add color to form an illusion of the Duke Kunshan University logo. 
 
@@ -21,5 +23,4 @@ As stochastic it may be, the grid that appears in Fields shows itself consistent
 In creating art from rule-sets realized through code, I find the question of authorship more and more complex. Any thought or concept I think of will be shaped and reformed by not just the medium I transfer it to, but also by the eyes and minds of those that perceive it, including myself. Parameter tuning therefore largely became pointless unless it affected the concept or rule in a direct way. 
 
 I author the concept and pass it onto my hands to code, which passes it onto the Java interpreter, passing it onto my eyes to perceive, interpret, and judge. The artwork becomes something entirely new on every pass, adding another chance for emergence each step. The same rules must apply to any medium, therefore any medium is capable of emergence. 
-
 
