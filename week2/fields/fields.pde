@@ -4,14 +4,14 @@ float tileSize = 200;
 Tile[][] grid;
 PVector[] pos = new PVector[3];
 PVector[] prev = new PVector[3];
-color[] colsRGB = { color(255, 0, 0, 20), color(0, 255, 0, 20), color(0, 0, 255, 20) };
+color[] colsRGB = { color(255, 0, 0, 200), color(0, 255, 0, 200), color(0, 0, 255, 200) };
 float step = 2;
 float t = 0;
 int minute;
 
 void setup() {
-  //size(1000, 1000);
-  fullScreen();
+  size(1000, 1000);
+  // fullScreen();
   frameRate(60);
   blendMode(ADD);
   cols = int(width / tileSize);
@@ -38,14 +38,15 @@ void draw() {
   if (frameCount%frameRate!=0) {
     noStroke();
     blendMode(DARKEST);
-    fill(0, 1);
+    // blendMode(MULTIPLY);
+    if (frameCount%2==0) fill(0, 1);
     rect(0, 0, width, height);
     //rect(width/4, height/4, width/2, height/2);
     noFill();
 
-    t += 8;
+    t += 10;
 
-    strokeWeight(5);
+    strokeWeight(2);
     blendMode(ADD);
     for (int i = 0; i < 3; i++) {
       stroke(colsRGB[i]);
