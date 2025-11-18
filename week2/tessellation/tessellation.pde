@@ -1,8 +1,10 @@
 float side, radius; 
 
 void setup(){
-  size(900,900);
+  size(1920,180);
   background(0);
+  smooth();
+  pixelDensity(1);
   noStroke();
   side = 90.0;
   radius = side/2;
