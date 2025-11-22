@@ -1,15 +1,19 @@
-Gun gun;
+
 boolean[] keys = new boolean[256];
 ArrayList<Balloon> balloons;
 ArrayList<Bullet> bullets;
 int level = 1;
 int mags = 3;
 boolean gameOver = false;
+Gun gun;
+
+
 
 void setup() {
   fullScreen();
+  //size(800,800);
   background(0);
-  gun = new Gun(width/2, height/2, "anar's favorite gun");
+  gun = new Gun(width/2, height/2, "pls work as intended");
   balloons = new ArrayList<Balloon>();
   bullets = new ArrayList<Bullet>();
   spawnBalloons();
@@ -18,8 +22,9 @@ void setup() {
 void draw() {
   background(0);
 
+
   if (gameOver) {
-    fill(255,0,0);
+    fill(255, 0, 0);
     textSize(80);
     textAlign(CENTER, CENTER);
     text("GAME OVER", width/2, height/2 - 40);
@@ -65,9 +70,10 @@ void draw() {
     }
   }
 
+  // ######next level logic:###########
   if (balloons.size() == 0) {
     level++;
-    mags++;
+    if (mags < 3) mags++;
     spawnBalloons();
     gun.randomizeSeed();
   }
@@ -76,6 +82,7 @@ void draw() {
     gameOver = true;
   }
 
+  // ################HUD#################
   fill(255);
   textSize(24);
   textAlign(LEFT, BASELINE);
@@ -92,7 +99,7 @@ void spawnBalloons() {
   for (int i = 0; i < numBalloons; i++) {
     float x = random(100, width - 100);
     float y = random(100, height - 100);
-    int strength = int(random(1, min(4, level)));
+    int strength = int(random(1, min(6, level)));
     balloons.add(new Balloon(x, y, strength));
   }
 }
@@ -170,8 +177,9 @@ class Gun {
   float[] shapeTopWidths;
   float[] shapeOffsets;
   color[] shapeColors;
-  boolean[] shapeUsesCustomColor;
+  boolean[] shapeHasUniqueColor;
 
+  // Maybe I can add loading guns from a table for a controlled experience.
   Gun(float x, float y, String gunName) {
     this.seed = gunName.hashCode();
     this.xpos = x;
@@ -192,7 +200,12 @@ class Gun {
     burstSize = int(random(2, 5));
     burstFireDelay = int(random(2, 6));
     burstCooldownDelay = int(random(10, 25));
-    maxAmmo = int(random(10, 51));
+    pelletCount = int(random(4, 10));
+    if (fireMode < 3) {
+      maxAmmo = int(random(10, 51));
+    } else {
+      maxAmmo = int(random(5, 15));
+    }
     currentAmmo = maxAmmo;
     bulletSpeed = random(20, 40);
     bulletSize = random(4, 11);
@@ -200,9 +213,8 @@ class Gun {
     bulletColor = color(random(120, 255), random(120, 255), random(40, 200));
     bulletSpreadDegrees = random(0, 6);
     spreadPatternLength = int(random(1, 6));
-    pelletCount = int(random(4, 10));
     shotgunSpreadDegrees = random(10, 25);
-    numDecorativeShapes = int(random(3, 6));
+    numDecorativeShapes = int(random(3, 10));
     shapeTypes = new int[numDecorativeShapes];
     shapePositions = new float[numDecorativeShapes];
     shapeWidths = new float[numDecorativeShapes];
@@ -210,7 +222,7 @@ class Gun {
     shapeTopWidths = new float[numDecorativeShapes];
     shapeOffsets = new float[numDecorativeShapes];
     shapeColors = new color[numDecorativeShapes];
-    shapeUsesCustomColor = new boolean[numDecorativeShapes];
+    shapeHasUniqueColor = new boolean[numDecorativeShapes];
     for (int i = 0; i < numDecorativeShapes; i++) {
       shapeTypes[i] = int(random(3));
       shapePositions[i] = random(0, barrelLength);
@@ -218,8 +230,8 @@ class Gun {
       shapeHeights[i] = random(20, 80);
       shapeTopWidths[i] = random(15, shapeWidths[i] * 0.8);
       shapeOffsets[i] = random(-barrelGirth/2 - 30, barrelGirth/2 + 30);
-      shapeUsesCustomColor[i] = random(1) < 0.5;
-      if (shapeUsesCustomColor[i]) shapeColors[i] = color(random(50, 255), random(50, 255), random(50, 255));
+      shapeHasUniqueColor[i] = random(1) < 0.5;
+      if (shapeHasUniqueColor[i]) shapeColors[i] = color(random(50, 255), random(50, 255), random(50, 255));
       else shapeColors[i] = metalGrey;
     }
     burstCount = 0;
@@ -249,6 +261,7 @@ class Gun {
     triggerHeld = isPressed;
   }
 
+  // fireModeNames = {"SINGLE", "BURST", "AUTO", "SINGLE SHOTGUN", "BURST SHOTGUN", "AUTO SHOTGUN"};
   void fire() {
     if (currentAmmo <= 0) return;
     if (fireMode == 0) {
@@ -274,7 +287,7 @@ class Gun {
           shotsFired++;
         }
       }
-    } else if (fireMode == 2) {
+    } else if (fireMode == 2) { // AUTO
       if (fireCounter > 0) return;
       currentAmmo--;
       bullets.add(createBullet());
@@ -336,13 +349,13 @@ class Gun {
     targetAngle = atan2(mouseY - ypos, mouseX - xpos);
     facingLeft = mouseX < xpos;
     float angleDiff = targetAngle - angle;
-    while (angleDiff > PI) angleDiff -= TWO_PI;
-    while (angleDiff < -PI) angleDiff += TWO_PI;
+    if (angleDiff > PI) angleDiff -= TWO_PI;
+    if (angleDiff < -PI) angleDiff += TWO_PI;
     angle += angleDiff * rotationSmoothingSpeed;
-    while (angle > TWO_PI) angle -= TWO_PI;
-    while (angle < 0) angle += TWO_PI;
-    while (targetAngle > TWO_PI) targetAngle -= TWO_PI;
-    while (targetAngle < 0) targetAngle += TWO_PI;
+    if (angle > TWO_PI) angle -= TWO_PI;
+    if (angle < 0) angle += TWO_PI;
+    if (targetAngle > TWO_PI) targetAngle -= TWO_PI;
+    if (targetAngle < 0) targetAngle += TWO_PI;
   }
 
   void drawGun() {
@@ -354,20 +367,22 @@ class Gun {
       rotate(PI - displayAngle);
     } else rotate(displayAngle);
     fill(metalGrey);
-    stroke(metalGrey);
     noStroke();
+
     pushMatrix();
     strokeWeight(16);
     stroke(metalGrey);
+    stroke(130);
     line(0, 0, handleLength * cos(handleSlant), handleLength * sin(handleSlant));
     popMatrix();
+
     fill(metalGrey);
     rect(0, -barrelGirth/2 - 8, barrelLength, barrelGirth);
-    drawDecorativeShapes();
+    drawDecor();
     popMatrix();
   }
 
-  void drawDecorativeShapes() {
+  void drawDecor() {
     noStroke();
     for (int i = 0; i < numDecorativeShapes; i++) {
       float x = shapePositions[i];
@@ -407,7 +422,7 @@ class Gun {
   }
 
   void fireShotgunPellets() {
-    float recoilAmount = radians(bulletSize * 0.5 * (1 + pelletCount * 0.1));
+    float recoilAmount =+ radians(bulletSize * 0.5 * (1 + pelletCount * 0.1));
     recoilAngle -= recoilAmount;
     float spreadRadians = radians(shotgunSpreadDegrees);
     float effectiveRecoil = facingLeft ? -recoilAngle : recoilAngle;
@@ -422,13 +437,12 @@ class Gun {
     }
   }
 }
-
 class Balloon {
   float xpos, ypos;
   float velX, velY;
   int strength;
-  float baseRadius = 30;
-  color[] layerColors = {color(255, 50, 50), color(255, 150, 50), color(255, 255, 50)};
+  float baseRadius = 20;
+  color[] layerColors = {color(255, 50, 50), color(255, 150, 50), color(255, 255, 50), color(150, 255, 20), color(100, 200, 200), color(50, 100, 255)};
 
   Balloon(float x, float y, int str) {
     xpos = x;
@@ -439,10 +453,12 @@ class Balloon {
   }
 
   void update(int level) {
-    float speedMultiplier = 1 + (level * 0.3);
+    float speedMultiplier = 0.5 + (level * 0.3);
     xpos += velX * speedMultiplier;
     ypos += velY * speedMultiplier;
+
     if (xpos - getRadius() < 0 || xpos + getRadius() > width) velX *= -1;
+
     if (ypos - getRadius() < 0 || ypos + getRadius() > height) velY *= -1;
     xpos = constrain(xpos, getRadius(), width - getRadius());
     ypos = constrain(ypos, getRadius(), height - getRadius());
@@ -452,24 +468,20 @@ class Balloon {
     for (int i = strength - 1; i >= 0; i--) {
       float r = baseRadius + (i * 15);
       fill(layerColors[i % layerColors.length]);
-      stroke(100);
+      stroke(255);
       strokeWeight(2);
       circle(xpos, ypos, r * 2);
     }
   }
-
   float getRadius() {
     return baseRadius + ((strength - 1) * 15);
   }
-
   void takeDamage() {
     strength--;
   }
-
   boolean isDead() {
     return strength <= 0;
   }
-
   boolean isOffScreen() {
     return xpos < -100 || xpos > width + 100 || ypos < -100 || ypos > height + 100;
   }
@@ -492,7 +504,6 @@ class Bullet {
     bulletColor = color(255, 255, 150);
     trajectory = 0;
   }
-
   Bullet(float x, float y, float vx, float vy, float s, color c, int t) {
     xpos = x;
     ypos = y;
@@ -502,16 +513,15 @@ class Bullet {
     bulletColor = c;
     trajectory = t;
   }
-
   void update() {
-    if (trajectory == 0) {
+    if (trajectory == 0) { // Straight
       xpos += velX;
       ypos += velY;
-    } else if (trajectory == 1) {
+    } else if (trajectory == 1) { // Sine wave
       xpos += velX;
       ypos += velY + sin(wavePhase) * 2;
       wavePhase += 0.1;
-    } else if (trajectory == 2) {
+    } else if (trajectory == 2) { // Free fall
       xpos += velX;
       ypos += velY;
       velY += gravity;
@@ -524,11 +534,9 @@ class Bullet {
     strokeWeight(1);
     circle(xpos, ypos, size);
   }
-
   boolean isOffScreen() {
     return xpos < 0 || xpos > width || ypos < 0 || ypos > height;
   }
-
   boolean collidesWith(Balloon b) {
     return dist(xpos, ypos, b.xpos, b.ypos) < size/2 + b.getRadius();
   }
